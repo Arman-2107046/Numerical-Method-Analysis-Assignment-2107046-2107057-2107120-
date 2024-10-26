@@ -491,8 +491,6 @@ void Bisection()
     cout << "root = " << c << endl;
 }
 
-
-
 void FalsePosition()
 {
     int p;
@@ -510,7 +508,6 @@ void FalsePosition()
     double r1 = -xMax;
     double r2 = xMax;
 
-
     double a = r1, b = r2;
     bool intervalFound = false;
 
@@ -525,7 +522,6 @@ void FalsePosition()
         }
     }
 
-  
     double tolerance = 1e-6;
     int max_iterations = 1000;
     double c, fa = fx(a, arr), fb = fx(b, arr);
@@ -704,6 +700,136 @@ void Secant()
     }
 }
 
+double f(double x, double y)
+{
+    return x + y; // Example: dy/dx = x + y
+}
+void RungeKutta()
+{
+    double x0, y0, h, x_target;
+
+    cout << "Enter initial values for x and y: ";
+    cin >> x0 >> y0;
+    cout << "Enter step size h: ";
+    cin >> h;
+    cout << "Enter target x value: ";
+    cin >> x_target;
+
+    clearScreen();
+
+    double x = x0;
+    double y = y0;
+
+    cout << "x" << setw(10) << "y" << endl;
+    cout << fixed << setprecision(6);
+
+    while (x < x_target)
+    {
+        double k1 = h * f(x, y);
+        double k2 = h * f(x + h / 2.0, y + k1 / 2.0);
+        double k3 = h * f(x + h / 2.0, y + k2 / 2.0);
+        double k4 = h * f(x + h, y + k3);
+
+        y = y + (k1 + 2 * k2 + 2 * k3 + k4) / 6.0;
+        x = x + h;
+
+        cout << x << setw(10) << y << endl;
+    }
+}
+
+int fact(int n)
+{
+    int f = 1;
+    for (int i = 2; i <= n; i++)
+        f *= i;
+    return f;
+}
+
+double newtonForward(vector<double> &x, vector<double> &y, double value)
+{
+    int n = x.size();
+    vector<vector<double>> diff(n, vector<double>(n));
+
+    for (int i = 0; i < n; i++)
+        diff[i][0] = y[i];
+
+    for (int j = 1; j < n; j++)
+    {
+        for (int i = 0; i < n - j; i++)
+        {
+            diff[i][j] = diff[i + 1][j - 1] - diff[i][j - 1];
+        }
+    }
+
+    double result = y[0];
+    double u = (value - x[0]) / (x[1] - x[0]);
+    double term = u;
+
+    for (int i = 1; i < n; i++)
+    {
+        result += (term * diff[0][i]) / fact(i);
+        term *= (u - i);
+    }
+
+    return result;
+}
+
+double newtonBackward(vector<double> &x, vector<double> &y, double value)
+{
+    int n = x.size();
+    vector<vector<double>> diff(n, vector<double>(n));
+
+    for (int i = 0; i < n; i++)
+        diff[i][0] = y[i];
+
+    for (int j = 1; j < n; j++)
+    {
+        for (int i = n - 1; i >= j; i--)
+        {
+            diff[i][j] = diff[i][j - 1] - diff[i - 1][j - 1];
+        }
+    }
+
+    double result = y[n - 1];
+    double u = (value - x[n - 1]) / (x[1] - x[0]);
+    double term = 1.0;
+
+    for (int i = 1; i < n; i++)
+    {
+        term *= (u + (i - 1));
+        result += (term * diff[n - 1][i]) / fact(i);
+    }
+
+    return result;
+}
+
+void NewtonForwardBackwardInterpolation()
+{
+    int n;
+    cout << "Enter number of data points: ";
+    cin >> n;
+
+    vector<double> x(n), y(n);
+
+    cout << "Enter data points (x and y values):\n";
+    for (int i = 0; i < n; i++)
+    {
+        cin >> x[i] >> y[i];
+    }
+
+    double value;
+    cout << "Enter the value of x for which you want to interpolate: ";
+    cin >> value;
+
+    clearScreen();
+
+    double resultForward = newtonForward(x, y, value);
+    cout << "The interpolated value at x = " << value << " using Forward Interpolation is: " << fixed << setprecision(5) << resultForward << endl;
+
+    double resultBackward = newtonBackward(x, y, value);
+    cout << "The interpolated value at x = " << value << " using Backward Interpolation is: " << fixed << setprecision(5) << resultBackward << endl;
+}
+
 int main()
 {
     int p;
@@ -711,7 +837,9 @@ int main()
     {
         cout << "Press 1 to solve system of linear equations" << endl;
         cout << "Press 2 to solve polynomial equation" << endl;
-        cout << "press 3 to terminate the process" << endl;
+        cout << "Press 3 to use Runge Kutta Method" << endl;
+        cout << "Press 4 to use Newton Forward Backward Interpolation method" << endl;
+        cout << "press 5 to terminate the process" << endl;
         cin >> p;
         clearScreen();
 
@@ -854,6 +982,16 @@ int main()
             }
         }
         else if (p == 3)
+        {
+            RungeKutta();
+            return 0;
+        }
+        else if (p == 4)
+        {
+            NewtonForwardBackwardInterpolation();
+            return 0;
+        }
+        else if (p == 5)
         {
             cout << "The Process Is Terminated" << endl;
             return 0;
