@@ -367,6 +367,342 @@ void LU()
     }
 }
 
+// void Bisection()
+// {
+//     int p;
+//     cout << "Enter power: " << endl;
+//     cin >> p;
+
+//     vector<int> arr(p + 1);
+//     cout << "Enter coefficients: " << endl;
+
+//     for (int i = 0; i < arr.size(); i++)
+//     {
+//         cin >> arr[i];
+//     }
+
+//     clearScreen();
+
+//     double xMax = sqrt((arr[1] / arr[0]) * (arr[1] / arr[0]) - 2 * (arr[2] / arr[0]));
+//     double r1 = -xMax;
+//     double r2 = xMax;
+
+//     double final_root = 0;
+
+//     double a, b;
+//     for (int i = r1; i <= r2; i++)
+//     {
+//         if ((fx(i, arr) * fx(i + 1, arr)) < 0)
+//         {
+//             a = i;
+//             b = i + 1;
+//         }
+//     }
+
+//     if (fx(a, arr) * fx(b, arr) >= 0)
+//     {
+//         cout << "Enter a correct range where the function changes sign." << endl;
+//         return;
+//     }
+
+//     double c;
+//     double tolerance = 1e-6;
+//     int max_iterations = 2000;
+//     int iteration = 0;
+
+//     for (int i = 1; (b - a) >= tolerance && i <= max_iterations; i++)
+//     {
+//         c = (a + b) / 2;
+
+//         if (fx(c, arr) == 0)
+//         {
+//             cout << "Exact root is found" << endl;
+//             cout << "root=" << c << endl;
+//             return;
+//         }
+
+//         if (fx(a, arr) * fx(c, arr) < 0)
+//             b = c;
+//         else
+//             a = c;
+//     }
+//     cout << "root=" << c << endl;
+// }
+
+void Bisection()
+{
+    int p;
+    cout << "Enter power: ";
+    cin >> p;
+
+    vector<int> arr(p + 1);
+    cout << "Enter coefficients: ";
+    for (int i = 0; i < arr.size(); i++)
+    {
+        cin >> arr[i];
+    }
+
+    // Clear screen functionality
+    // clearScreen();
+
+    // double xMax = sqrt((arr[1] / (double)arr[0]) * (arr[1] / (double)arr[0]) - 2 * (arr[2] / (double)arr[0]));
+    double xMax = ceil(sqrt(pow(arr[1] / arr[0], 2) - 2 * (arr[2] / arr[0])));
+    double r1 = -xMax;
+    double r2 = xMax;
+
+    double a = r1, b = r2;
+    bool intervalFound = false;
+
+    for (int i = r1; i <= r2; i++)
+    {
+        if ((fx(i, arr) * fx(i + 1, arr)) < 0)
+        {
+            a = i;
+            b = i + 1;
+            intervalFound = true;
+            break;
+        }
+    }
+
+    double c;
+    double tolerance = 1e-6;
+    int max_iterations = 2000;
+    int iteration = 0;
+
+    while ((b - a) >= tolerance && iteration < max_iterations)
+    {
+        c = (a + b) / 2;
+
+        if (fabs(fx(c, arr)) < tolerance)
+        {
+            cout << "Exact root is found within tolerance." << endl;
+            cout << "root = " << c << endl;
+            return;
+        }
+
+        if (fx(a, arr) * fx(c, arr) < 0)
+            b = c;
+        else
+            a = c;
+
+        iteration++;
+    }
+
+    cout << "root = " << c << endl;
+}
+
+
+
+void FalsePosition()
+{
+    int p;
+    cout << "Enter power: ";
+    cin >> p;
+
+    vector<int> arr(p + 1);
+    cout << "Enter coefficients: ";
+    for (int i = 0; i < arr.size(); i++)
+    {
+        cin >> arr[i];
+    }
+
+    double xMax = ceil(sqrt(pow(arr[1] / (double)arr[0], 2) - 2 * (arr[2] / (double)arr[0])));
+    double r1 = -xMax;
+    double r2 = xMax;
+
+
+    double a = r1, b = r2;
+    bool intervalFound = false;
+
+    for (int i = r1; i <= r2; i++)
+    {
+        if ((fx(i, arr) * fx(i + 1, arr)) < 0)
+        {
+            a = i;
+            b = i + 1;
+            intervalFound = true;
+            break;
+        }
+    }
+
+  
+    double tolerance = 1e-6;
+    int max_iterations = 1000;
+    double c, fa = fx(a, arr), fb = fx(b, arr);
+
+    for (int i = 1; abs(b - a) >= tolerance && i <= max_iterations; i++)
+    {
+        c = (a * fb - b * fa) / (fb - fa);
+
+        if (fabs(fx(c, arr)) < tolerance)
+        {
+            cout << "Exact root is found within tolerance." << endl;
+            cout << "root = " << c << endl;
+            return;
+        }
+
+        double fc = fx(c, arr);
+
+        if (fa * fc < 0)
+        {
+            b = c;
+            fb = fc; // Update fb to fx(b, arr)
+        }
+        else
+        {
+            a = c;
+            fa = fc; // Update fa to fx(a, arr)
+        }
+    }
+
+    cout << "root = " << c << endl;
+}
+
+double fx1(double a, vector<double> &arr)
+{
+    int n = arr.size();
+    double sum = 0;
+    for (int i = 0; i < n; i++)
+    {
+        sum += arr[i] * pow(a, n - 1 - i);
+    }
+    return sum;
+}
+double diff(double a, vector<double> &arr)
+{
+    int n = arr.size();
+    double sum = 0;
+    for (int i = 0; i < n - 1; i++)
+    {
+        sum += arr[i] * (n - 1 - i) * pow(a, n - i - 2);
+    }
+    return sum;
+}
+
+double newtonRaphson(vector<double> &arr, double a)
+{
+    double tolerance = 1e-6;
+    int maxIter = 1000;
+    double nextX = 0;
+    double x = a;
+
+    for (int i = 0; i < maxIter; i++)
+    {
+
+        nextX = x - fx1(x, arr) / diff(x, arr);
+
+        if (abs(x - nextX) < tolerance)
+        {
+            return nextX;
+        }
+
+        x = nextX;
+    }
+    return x;
+}
+
+void deflate(vector<double> &arr, double root)
+{
+    int n = arr.size();
+    vector<double> newArr(n - 1);
+    newArr[0] = arr[0];
+    for (int i = 1; i < n - 1; i++)
+    {
+        newArr[i] = arr[i] + newArr[i - 1] * root;
+    }
+    arr = newArr;
+}
+
+void Newtonraphson()
+{
+    int p;
+    cout << "Enter Power" << endl;
+    cin >> p;
+    vector<double> arr(p + 1);
+
+    for (int i = 0; i <= p; i++)
+    {
+        cin >> arr[i];
+    }
+
+    clearScreen();
+
+    vector<double> roots;
+    double x = 10;
+    while (p > 0)
+    {
+        double root = newtonRaphson(arr, x);
+        roots.push_back(root);
+        deflate(arr, root);
+        p--;
+    }
+
+    for (auto it : roots)
+    {
+        cout << it << " ";
+    }
+}
+
+double fx(double a, vector<double> &arr)
+{
+    double sum = 0;
+    int n = arr.size();
+
+    for (int i = 0; i < n; i++)
+    {
+        sum += arr[i] * pow(a, n - 1 - i);
+    }
+    return sum;
+}
+
+double secant(vector<double> &arr, double a, double b)
+{
+    double tolerance = 1e-6;
+    int maxIter = 1000;
+    double x1 = a, x2 = b;
+    double x3 = 0;
+
+    for (int i = 0; i < maxIter; i++)
+    {
+
+        x3 = (x1 * fx(x2, arr) - x2 * fx(x1, arr)) / (fx(x2, arr) - fx(x1, arr));
+        if (abs(x1 - x2) < tolerance)
+        {
+            return x3;
+        }
+
+        x1 = x2;
+        x2 = x3;
+    }
+    return x2;
+}
+
+void Secant()
+{
+    int p;
+    cout << "Enter Power" << endl;
+    cin >> p;
+    vector<double> arr(p + 1);
+    for (int i = 0; i < p + 1; i++)
+    {
+        cin >> arr[i];
+    }
+
+    clearScreen();
+
+    vector<double> roots;
+    double x1 = 10, x2 = 12;
+    while (p--)
+    {
+        double root = secant(arr, x1, x2);
+        roots.push_back(root);
+        deflate(arr, root);
+    }
+    for (auto it : roots)
+    {
+        cout << it << " ";
+    }
+}
 
 int main()
 {
@@ -374,7 +710,8 @@ int main()
     while (1)
     {
         cout << "Press 1 to solve system of linear equations" << endl;
-        cout << "press 2 to terminate the process" << endl;
+        cout << "Press 2 to solve polynomial equation" << endl;
+        cout << "press 3 to terminate the process" << endl;
         cin >> p;
         clearScreen();
 
@@ -456,8 +793,67 @@ int main()
                 return 0;
             }
         }
-     
+
         else if (p == 2)
+        {
+            int p2;
+
+            cout << "Press 1 to use Bisection Method" << endl;
+            cout << "Press 2 to use False Position Method" << endl;
+            cout << "Press 3 to use Newton Raphson Method" << endl;
+            cout << "Press 4 to use Secant Method" << endl;
+            cout << "Press 5 to terminate the process" << endl;
+            // clearScreen();
+
+            cin >> p2;
+            if (p2 == 1)
+            {
+                Bisection();
+                cout << endl;
+                return 0;
+
+                // 3
+                // 1 0 -2 -5
+            }
+            else if (p2 == 2)
+            {
+                FalsePosition();
+                cout << endl;
+                return 0;
+
+                // 3
+                // 1 0 -2 -5
+            }
+            else if (p2 == 3)
+            {
+                Newtonraphson();
+                cout << endl;
+                return 0;
+
+                // 3
+                // 1 -6 11 -6
+            }
+            else if (p2 == 4)
+            {
+                Secant();
+                cout << endl;
+                return 0;
+
+                // 3
+                // 1 -6 11 -6
+            }
+            else if (p2 == 5)
+            {
+                cout << "The Process Is Terminated" << endl;
+                return 0;
+            }
+            else
+            {
+                cout << "Invalid Input" << endl;
+                return 0;
+            }
+        }
+        else if (p == 3)
         {
             cout << "The Process Is Terminated" << endl;
             return 0;
