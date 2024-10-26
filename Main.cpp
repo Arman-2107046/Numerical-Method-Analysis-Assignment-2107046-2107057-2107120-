@@ -77,6 +77,74 @@ void JacobiIteration()
     // return 0;
 }
 
+// void GaussSeidelIteration()
+// {
+//     // Example augmented matrix:
+//     // 3 2 -1 11
+//     // 2 -3 1 7
+//     // 5 1 -2 12
+//     cout << "Enter size" << endl;
+//     int n;
+//     cin >> n;
+//     vector<vector<double>> AugmentedMatrix(n, vector<double>(n + 1));
+//     vector<double> x(n, 0.0);
+
+//     cout << "Enter the augmented matrix (coefficients and constants):" << endl;
+//     for (int i = 0; i < n; ++i)
+//     {
+//         for (int j = 0; j <= n; ++j)
+//         {
+//             cin >> AugmentedMatrix[i][j];
+//         }
+//     }
+//     clearScreen();
+
+//     double tolerance = 1e-6;
+//     int maxIterations = 100000;
+
+//     for (int iter = 1; iter <= maxIterations; ++iter)
+//     {
+//         bool converged = true;
+
+//         for (int i = 0; i < n; ++i)
+//         {
+//             double sum = AugmentedMatrix[i][n];
+//             for (int j = 0; j < n; ++j)
+//             {
+//                 if (j < i)
+//                 {
+//                     sum -= AugmentedMatrix[i][j] * x[j];
+//                 }
+//                 else
+//                 {
+//                     sum -= AugmentedMatrix[i][j] * x[j];
+//                 }
+//             }
+//             double x_new = sum / AugmentedMatrix[i][i];
+
+//             if (abs(x_new - x[i]) > tolerance)
+//             {
+//                 converged = false;
+//             }
+
+//             x[i] = x_new;
+//         }
+
+//         if (converged)
+//         {
+//             cout << "Converged after " << iter << " iterations." << endl;
+//             break;
+//         }
+//     }
+
+//     cout << "Final solution: ";
+//     for (int i = 0; i < n; ++i)
+//     {
+//         cout << fixed << setprecision(6) << x[i] << " ";
+//     }
+//     cout << endl;
+// }
+
 void GaussSeidelIteration()
 {
     // Example augmented matrix:
@@ -111,11 +179,7 @@ void GaussSeidelIteration()
             double sum = AugmentedMatrix[i][n];
             for (int j = 0; j < n; ++j)
             {
-                if (j < i)
-                {
-                    sum -= AugmentedMatrix[i][j] * x[j];
-                }
-                else
+                if (j != i)
                 {
                     sum -= AugmentedMatrix[i][j] * x[j];
                 }
