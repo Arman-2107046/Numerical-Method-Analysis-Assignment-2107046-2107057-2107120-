@@ -367,67 +367,90 @@ void LU()
     }
 }
 
-// void Bisection()
-// {
-//     int p;
-//     cout << "Enter power: " << endl;
-//     cin >> p;
+void Inverse(vector<vector<float>> &arr, vector<vector<float>> &unit, int n)
+{
+    vector<float> x(n);
+    float ratio;
 
-//     vector<int> arr(p + 1);
-//     cout << "Enter coefficients: " << endl;
+    for (int i = 0; i < n - 1; i++)
+    {
+        if (arr[i][i] == 0)
+        {
+            cerr << "Error: Division by zero, zero pivot encountered." << endl;
+            return;
+        }
 
-//     for (int i = 0; i < arr.size(); i++)
-//     {
-//         cin >> arr[i];
-//     }
+        for (int j = i + 1; j < n; j++)
+        {
+            ratio = arr[j][i] / arr[i][i];
+            for (int k = 0; k < n; k++)
+            {
+                arr[j][k] -= arr[i][k] * ratio;
+                unit[j][k] -= unit[i][k] * ratio;
+            }
+        }
+    }
+    for (int i = n - 1; i > 0; i--)
+    {
+        if (arr[i][i] == 0)
+        {
+            cerr << "Error: Division by zero, zero pivot encountered." << endl;
+            return;
+        }
 
-//     clearScreen();
+        for (int j = i - 1; j >= 0; j--)
+        {
+            ratio = arr[j][i] / arr[i][i];
+            for (int k = 0; k < n; k++)
+            {
+                arr[j][k] -= arr[i][k] * ratio;
+                unit[j][k] -= unit[i][k] * ratio;
+            }
+        }
+    }
 
-//     double xMax = sqrt((arr[1] / arr[0]) * (arr[1] / arr[0]) - 2 * (arr[2] / arr[0]));
-//     double r1 = -xMax;
-//     double r2 = xMax;
+    for (int i = 0; i < n; i++)
+    {
+        float diag = arr[i][i];
+        for (int j = 0; j < n; j++)
+        {
+            arr[i][j] /= diag;
+            unit[i][j] /= diag;
+        }
+    }
 
-//     double final_root = 0;
+    for (auto it : unit)
+    {
+        for (int i = 0; i < it.size(); i++)
+        {
+            cout << it[i] << " ";
+        }
+        cout << endl;
+    }
+}
+void InverseMatrix()
+{
+    int n;
+    cout << "Enter Size" << endl;
+    cin >> n;
+    cout << "enter matrix" << endl;
+    vector<vector<float>> arr(n, vector<float>(n));
+    for (int i = 0; i < n; i++)
+    {
+        for (int j = 0; j < n; j++)
+        {
+            cin >> arr[i][j];
+        }
+    }
 
-//     double a, b;
-//     for (int i = r1; i <= r2; i++)
-//     {
-//         if ((fx(i, arr) * fx(i + 1, arr)) < 0)
-//         {
-//             a = i;
-//             b = i + 1;
-//         }
-//     }
+    vector<vector<float>> unit(n, vector<float>(n, 0));
+    for (int i = 0; i < n; i++)
+    {
+        unit[i][i] = 1;
+    }
 
-//     if (fx(a, arr) * fx(b, arr) >= 0)
-//     {
-//         cout << "Enter a correct range where the function changes sign." << endl;
-//         return;
-//     }
-
-//     double c;
-//     double tolerance = 1e-6;
-//     int max_iterations = 2000;
-//     int iteration = 0;
-
-//     for (int i = 1; (b - a) >= tolerance && i <= max_iterations; i++)
-//     {
-//         c = (a + b) / 2;
-
-//         if (fx(c, arr) == 0)
-//         {
-//             cout << "Exact root is found" << endl;
-//             cout << "root=" << c << endl;
-//             return;
-//         }
-
-//         if (fx(a, arr) * fx(c, arr) < 0)
-//             b = c;
-//         else
-//             a = c;
-//     }
-//     cout << "root=" << c << endl;
-// }
+    Inverse(arr, unit, n);
+}
 
 void Bisection()
 {
@@ -835,14 +858,24 @@ int main()
     int p;
     while (1)
     {
+        cout << "Press 0 to Inverse a matrix" << endl;
         cout << "Press 1 to solve system of linear equations" << endl;
         cout << "Press 2 to solve polynomial equation" << endl;
         cout << "Press 3 to use Runge Kutta Method" << endl;
         cout << "Press 4 to use Newton Forward Backward Interpolation method" << endl;
         cout << "press 5 to terminate the process" << endl;
         cin >> p;
+        
         clearScreen();
-
+        if (p == 0)
+        {
+            // 3
+            //  2 0 0
+            //  0 3 0
+            //  0 0 3
+            InverseMatrix();
+            return 0;
+        }
         if (p == 1)
         {
             int p1;
