@@ -465,10 +465,6 @@ void Bisection()
         cin >> arr[i];
     }
 
-    // Clear screen functionality
-    // clearScreen();
-
-    // double xMax = sqrt((arr[1] / (double)arr[0]) * (arr[1] / (double)arr[0]) - 2 * (arr[2] / (double)arr[0]));
     double xMax = ceil(sqrt(pow(arr[1] / arr[0], 2) - 2 * (arr[2] / arr[0])));
     double r1 = -xMax;
     double r2 = xMax;
@@ -478,7 +474,12 @@ void Bisection()
 
     for (int i = r1; i <= r2; i++)
     {
-        if ((fx(i, arr) * fx(i + 1, arr)) < 0)
+        if (fx(i, arr) == 0)
+        {
+            cout << "root = " << i << endl;
+            return;
+        }
+        else if ((fx(i, arr) * fx(i + 1, arr)) < 0)
         {
             a = i;
             b = i + 1;
@@ -517,6 +518,8 @@ void Bisection()
 void FalsePosition()
 {
     int p;
+    int t_roots = 0;
+    vector<float> roots;
     cout << "Enter power: ";
     cin >> p;
 
@@ -536,7 +539,13 @@ void FalsePosition()
 
     for (int i = r1; i <= r2; i++)
     {
-        if ((fx(i, arr) * fx(i + 1, arr)) < 0)
+        if (fx(i, arr) == 0)
+        {
+            cout << "root is: " << i << endl;
+            break;
+        }
+
+        else if ((fx(i, arr) * fx(i + 1, arr)) < 0)
         {
             a = i;
             b = i + 1;
@@ -544,37 +553,43 @@ void FalsePosition()
             break;
         }
     }
-
-    double tolerance = 1e-6;
-    int max_iterations = 1000;
-    double c, fa = fx(a, arr), fb = fx(b, arr);
-
-    for (int i = 1; abs(b - a) >= tolerance && i <= max_iterations; i++)
+    if (intervalFound)
     {
-        c = (a * fb - b * fa) / (fb - fa);
 
-        if (fabs(fx(c, arr)) < tolerance)
+        double tolerance = 1e-6;
+        int max_iterations = 1000;
+        double c, fa = fx(a, arr), fb = fx(b, arr);
+        int prev_c = max_iterations;
+        // for (int i = 1; abs(b - a) >= tolerance && i <= max_iterations; i++)
+        while (1)
         {
-            cout << "Exact root is found within tolerance." << endl;
-            cout << "root = " << c << endl;
-            return;
+            c = (a * fb - b * fa) / (fb - fa);
+            double fc = fx(c, arr);
+
+            if (fabs(fx(c, arr)) < tolerance)
+            {
+                cout << "Exact root is found within tolerance." << endl;
+                cout << "root = " << c << endl;
+                return;
+            }
+
+            else if (abs(prev_c - c) < tolerance)
+            {
+                cout << "Exact root is found within tolerance." << endl;
+                cout << "root = " << c << endl;
+                return;
+            }
+            else if (fa * fc < 0)
+            {
+                b = c;
+            }
+            else if (fa * fc > 0)
+                a = c;
+            prev_c = c;
         }
 
-        double fc = fx(c, arr);
-
-        if (fa * fc < 0)
-        {
-            b = c;
-            fb = fc; // Update fb to fx(b, arr)
-        }
-        else
-        {
-            a = c;
-            fa = fc; // Update fa to fx(a, arr)
-        }
+        cout << "root = " << c << endl;
     }
-
-    cout << "root = " << c << endl;
 }
 
 double fx1(double a, vector<double> &arr)
@@ -865,7 +880,7 @@ int main()
         cout << "Press 4 to use Newton Forward Backward Interpolation method" << endl;
         cout << "press 5 to terminate the process" << endl;
         cin >> p;
-        
+
         clearScreen();
         if (p == 0)
         {
